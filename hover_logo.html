@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fancy Hovering Logo</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0f172a; /* Deep modern dark blue */
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            color: #cbd5e1;
+            /* Hide the default cursor to make the custom one stand out */
+            cursor: none; 
+        }
+
+        .instruction {
+            font-size: 2.5rem;
+            font-weight: 200;
+            opacity: 0.6;
+            pointer-events: none; /* Let clicks pass through */
+            user-select: none;
+            letter-spacing: 2px;
+        }
+
+        /* The main logo element */
+        .cursor-logo {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 60px;
+            height: 60px;
+            /* Vibrant gradient */
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            /* Fancy glowing shadow */
+            box-shadow: 0 0 25px rgba(139, 92, 246, 0.7), 
+                        inset 0 0 10px rgba(255, 255, 255, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1.8rem;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+            /* Add a subtle rotation animation */
+            animation: pulse-spin 4s infinite linear;
+        }
+
+        /* A secondary trailing element for a dynamic feel */
+        .cursor-trail {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 20px;
+            height: 20px;
+            background: rgba(236, 72, 153, 0.6);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            filter: blur(5px);
+        }
+        
+        .cursor-trail-2 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 10px;
+            height: 10px;
+            background: rgba(59, 130, 246, 0.8);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9997;
+            filter: blur(2px);
+        }
+
+        @keyframes pulse-spin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        /* Container for the logo so it can be translated smoothly by JS while spinning with CSS */
+        .cursor-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 9999;
+            /* Will-change helps with performance on moving elements */
+            will-change: transform;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="instruction">Move your mouse</div>
+
+    <div class="cursor-trail-2" id="trail2"></div>
+    <div class="cursor-trail" id="trail1"></div>
+    
+    <div class="cursor-wrapper" id="logoWrapper">
+        <div class="cursor-logo">✨</div>
+    </div>
+
+    <script>
+        const logoWrapper = document.getElementById('logoWrapper');
+        const trail1 = document.getElementById('trail1');
+        const trail2 = document.getElementById('trail2');
+
+        // Initial positions at the center of the screen
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+
+        let logoX = window.innerWidth / 2;
+        let logoY = window.innerHeight / 2;
+
+        let t1X = window.innerWidth / 2;
+        let t1Y = window.innerHeight / 2;
+
+        let t2X = window.innerWidth / 2;
+        let t2Y = window.innerHeight / 2;
+
+        // Update target position on mouse move
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        // Animation loop for smooth interpolation (Lerp)
+        function animate() {
+            // Lerp formula: current += (target - current) * speedFactor
+            
+            // Logo follows mouse relatively quickly
+            logoX += (mouseX - logoX) * 0.25;
+            logoY += (mouseY - logoY) * 0.25;
+            
+            // Trail 1 follows slightly slower
+            t1X += (mouseX - t1X) * 0.15;
+            t1Y += (mouseY - t1Y) * 0.15;
+            
+            // Trail 2 follows even slower
+            t2X += (mouseX - t2X) * 0.08;
+            t2Y += (mouseY - t2Y) * 0.08;
+
+            // Apply transforms (subtracting half width/height to center on cursor)
+            logoWrapper.style.transform = `translate(${logoX - 30}px, ${logoY - 30}px)`;
+            trail1.style.transform = `translate(${t1X - 10}px, ${t1Y - 10}px)`;
+            trail2.style.transform = `translate(${t2X - 5}px, ${t2Y - 5}px)`;
+
+            requestAnimationFrame(animate);
+        }
+
+        // Start the animation loop
+        animate();
+    </script>
+</body>
+</html>
